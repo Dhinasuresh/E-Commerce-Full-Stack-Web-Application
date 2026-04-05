@@ -1,11 +1,16 @@
 {
-  "name": "my-react-app",
+  "name": "fertilizer-shop-manager",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "main": "desktop/main.cjs",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "desktop:dev": "concurrently -k \"npm run dev\" \"wait-on tcp:5173 && electron .\"",
+    "desktop:build-backend": "..\\build-backend.cmd",
+    "desktop:build": "npm run desktop:build-backend && npm run build && electron-builder --win portable",
+    "desktop:portable": "npm run desktop:build-backend && npm run build && electron-packager . \"Fertilizer Shop Manager\" --platform=win32 --arch=x64 --out=desktop-dist --overwrite --asar --extra-resource=\"../BackEnd/todo-app/target/todo-app-0.0.1-SNAPSHOT.jar\"",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -15,14 +20,42 @@
     "react-router-dom": "^7.13.1"
   },
   "devDependencies": {
+    "@electron/packager": "^19.1.0",
     "@eslint/js": "^9.39.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
+    "concurrently": "^9.2.1",
+    "electron": "^41.1.1",
+    "electron-builder": "^26.8.1",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
-    "vite": "^7.3.1"
+    "vite": "^7.3.1",
+    "wait-on": "^9.0.4"
+  },
+  "build": {
+    "appId": "com.dhinasuresh.fertilizershopmanager",
+    "productName": "Fertilizer Shop Manager",
+    "directories": {
+      "output": "desktop-dist"
+    },
+    "files": [
+      "dist/**/*",
+      "desktop/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../BackEnd/todo-app/target/todo-app-0.0.1-SNAPSHOT.jar",
+        "to": "backend/todo-app.jar"
+      }
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ]
+    }
   }
 }
