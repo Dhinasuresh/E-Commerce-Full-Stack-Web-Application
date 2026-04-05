@@ -3,9 +3,11 @@ package com.animeflict.todo_app.service;
 import com.animeflict.todo_app.model.User;
 import com.animeflict.todo_app.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Service
 public class UserServiceImpl implements UserService {
+    private static final BCryptPasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
     private final UserRepository userRepository;
 
     public UserServiceImpl(UserRepository userRepository) {
@@ -14,7 +16,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User register(User user) {
-        if (user == null || user.getUsername() == null || user.getUsername().isBlank() || user.getPassword() == null || user.getPassword().isBlank()) {
+        if (user == null || user.getUsername() == null || user.getUsername().isBlank() || user.getPasswordHash() == null || user.getPasswordHash().isBlank()) {
             throw new IllegalArgumentException("Username and password are required.");
         }
 
@@ -24,8 +26,9 @@ public class UserServiceImpl implements UserService {
 
         User created = new User();
         created.setUsername(user.getUsername().trim());
-        created.setPassword(user.getPassword());
+        created.setPasswordHash(PASSWORD_ENCODER.encode(user.getPasswordHash().trim()));
         created.setFullName(user.getFullName() == null || user.getFullName().isBlank() ? "New Customer" : user.getFullName().trim());
+        created.setRole(user.getRole() == null || user.getRole().isBlank() ? "OWNER" : user.getRole().trim().toUpperCase());
         return userRepository.save(created);
     }
 
@@ -37,7 +40,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public User authenticate(String username, String password) {
         return userRepository.findByUsernameIgnoreCase(username == null ? "" : username.trim())
-                .filter(user -> user.getPassword().equals(password))
+                .filter(User::isActive)
+                .filter(user -> PASSWORD_ENCODER.matches(password == null ? "" : password, user.getPasswordHash()))
                 .orElse(null);
     }
 }

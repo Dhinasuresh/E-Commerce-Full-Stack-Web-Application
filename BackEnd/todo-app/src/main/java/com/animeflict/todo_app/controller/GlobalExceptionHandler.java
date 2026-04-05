@@ -14,4 +14,10 @@ public class GlobalExceptionHandler {
     public Map<String, String> handleBadRequest(IllegalArgumentException exception) {
         return Map.of("message", exception.getMessage());
     }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Map<String, String> handleUnexpectedError(Exception exception) {
+        return Map.of("message", "Unexpected server error: " + exception.getMessage());
+    }
 }

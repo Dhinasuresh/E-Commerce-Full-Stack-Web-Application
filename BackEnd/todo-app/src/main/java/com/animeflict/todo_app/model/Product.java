@@ -6,6 +6,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "products")
@@ -18,40 +24,50 @@ public class Product {
     private String name;
 
     @Column(nullable = false)
+    private String brand;
+
+    @Column(nullable = false)
     private String category;
 
-    @Column(nullable = false, length = 2000)
-    private String description;
+    @Column(nullable = false, unique = true)
+    private String sku;
 
     @Column(nullable = false)
-    private double price;
+    private String packSize;
 
     @Column(nullable = false)
-    private double rating;
-
-    @Column(nullable = false, length = 1200)
-    private String imageUrl;
+    private String unit;
 
     @Column(nullable = false)
-    private boolean featured;
+    private String batchNumber;
+
+    private LocalDate expiryDate;
+
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal purchasePrice;
+
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal salePrice;
 
     @Column(nullable = false)
-    private int inventory;
+    private Integer stockQuantity;
 
-    public Product() {
-    }
+    @Column(nullable = false)
+    private Integer lowStockThreshold;
 
-    public Product(Long id, String name, String category, String description, double price, double rating, String imageUrl, boolean featured, int inventory) {
-        this.id = id;
-        this.name = name;
-        this.category = category;
-        this.description = description;
-        this.price = price;
-        this.rating = rating;
-        this.imageUrl = imageUrl;
-        this.featured = featured;
-        this.inventory = inventory;
-    }
+    @Column(nullable = false)
+    private String supplierName;
+
+    @Column(nullable = false)
+    private boolean active = true;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
 
     public Long getId() {
         return id;
@@ -69,6 +85,14 @@ public class Product {
         this.name = name;
     }
 
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
     public String getCategory() {
         return category;
     }
@@ -77,51 +101,99 @@ public class Product {
         this.category = category;
     }
 
-    public String getDescription() {
-        return description;
+    public String getSku() {
+        return sku;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setSku(String sku) {
+        this.sku = sku;
     }
 
-    public double getPrice() {
-        return price;
+    public String getPackSize() {
+        return packSize;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setPackSize(String packSize) {
+        this.packSize = packSize;
     }
 
-    public double getRating() {
-        return rating;
+    public String getUnit() {
+        return unit;
     }
 
-    public void setRating(double rating) {
-        this.rating = rating;
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getBatchNumber() {
+        return batchNumber;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setBatchNumber(String batchNumber) {
+        this.batchNumber = batchNumber;
     }
 
-    public boolean isFeatured() {
-        return featured;
+    public LocalDate getExpiryDate() {
+        return expiryDate;
     }
 
-    public void setFeatured(boolean featured) {
-        this.featured = featured;
+    public void setExpiryDate(LocalDate expiryDate) {
+        this.expiryDate = expiryDate;
     }
 
-    public int getInventory() {
-        return inventory;
+    public BigDecimal getPurchasePrice() {
+        return purchasePrice;
     }
 
-    public void setInventory(int inventory) {
-        this.inventory = inventory;
+    public void setPurchasePrice(BigDecimal purchasePrice) {
+        this.purchasePrice = purchasePrice;
+    }
+
+    public BigDecimal getSalePrice() {
+        return salePrice;
+    }
+
+    public void setSalePrice(BigDecimal salePrice) {
+        this.salePrice = salePrice;
+    }
+
+    public Integer getStockQuantity() {
+        return stockQuantity;
+    }
+
+    public void setStockQuantity(Integer stockQuantity) {
+        this.stockQuantity = stockQuantity;
+    }
+
+    public Integer getLowStockThreshold() {
+        return lowStockThreshold;
+    }
+
+    public void setLowStockThreshold(Integer lowStockThreshold) {
+        this.lowStockThreshold = lowStockThreshold;
+    }
+
+    public String getSupplierName() {
+        return supplierName;
+    }
+
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 }

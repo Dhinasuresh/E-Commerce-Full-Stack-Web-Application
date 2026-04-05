@@ -1,39 +1,136 @@
 package com.animeflict.todo_app;
 
-import com.animeflict.todo_app.model.Product;
+import com.animeflict.todo_app.dto.ProductRequest;
+import com.animeflict.todo_app.model.Customer;
 import com.animeflict.todo_app.model.User;
+import com.animeflict.todo_app.repository.CustomerRepository;
 import com.animeflict.todo_app.repository.ProductRepository;
 import com.animeflict.todo_app.repository.UserRepository;
+import com.animeflict.todo_app.service.ProductService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @SpringBootApplication
 public class TodoAppApplication {
+	private static final BCryptPasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
 
 	public static void main(String[] args) {
 		SpringApplication.run(TodoAppApplication.class, args);
 	}
 
 	@Bean
-	CommandLineRunner seedData(ProductRepository productRepository, UserRepository userRepository) {
+	CommandLineRunner seedData(
+			ProductRepository productRepository,
+			ProductService productService,
+			UserRepository userRepository,
+			CustomerRepository customerRepository
+	) {
 		return args -> {
-			if (userRepository.findByUsernameIgnoreCase("demo@shop.com").isEmpty()) {
-				User demoUser = new User();
-				demoUser.setFullName("Demo Shopper");
-				demoUser.setUsername("demo@shop.com");
-				demoUser.setPassword("demo123");
-				userRepository.save(demoUser);
+			if (userRepository.findByUsernameIgnoreCase("owner@fertilizer.com").isEmpty()) {
+				User owner = new User();
+				owner.setFullName("Store Owner");
+				owner.setUsername("owner@fertilizer.com");
+				owner.setPasswordHash(PASSWORD_ENCODER.encode("admin123"));
+				owner.setRole("OWNER");
+				userRepository.save(owner);
+			}
+
+			if (userRepository.findByUsernameIgnoreCase("staff@fertilizer.com").isEmpty()) {
+				User staff = new User();
+				staff.setFullName("Counter Staff");
+				staff.setUsername("staff@fertilizer.com");
+				staff.setPasswordHash(PASSWORD_ENCODER.encode("staff123"));
+				staff.setRole("STAFF");
+				userRepository.save(staff);
+			}
+
+			if (customerRepository.count() == 0) {
+				Customer customerOne = new Customer();
+				customerOne.setName("Ramesh Farms");
+				customerOne.setPhone("9876543210");
+				customerOne.setVillageOrAddress("Nandgaon");
+				customerOne.setNotes("Regular wholesale buyer");
+				customerRepository.save(customerOne);
+
+				Customer customerTwo = new Customer();
+				customerTwo.setName("Green Field Agro");
+				customerTwo.setPhone("9123456780");
+				customerTwo.setVillageOrAddress("Rampur");
+				customerTwo.setNotes("Buys on credit during season");
+				customerRepository.save(customerTwo);
 			}
 
 			if (productRepository.count() == 0) {
-				productRepository.save(new Product(null, "Urban Voyager Backpack", "Bags", "A weather-resistant backpack built for workdays, commutes, and weekend escapes.", 79.0, 4.8, "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=80", true, 18));
-				productRepository.save(new Product(null, "Aurora Wireless Headphones", "Audio", "Immersive over-ear headphones with deep bass and all-day battery life.", 149.0, 4.7, "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=80", true, 12));
-				productRepository.save(new Product(null, "Studio Desk Lamp", "Home", "Warm ambient lighting with a minimalist metal finish for modern setups.", 59.0, 4.6, "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=900&q=80", false, 25));
-				productRepository.save(new Product(null, "Pulse Smartwatch", "Wearables", "Fitness tracking, notifications, and a sleek AMOLED face in one compact watch.", 199.0, 4.5, "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=80", true, 10));
-				productRepository.save(new Product(null, "Cloud Knit Sneakers", "Fashion", "Lightweight everyday sneakers with soft cushioning and breathable knit uppers.", 109.0, 4.9, "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80", false, 30));
-				productRepository.save(new Product(null, "Stoneware Brew Set", "Kitchen", "Pour-over coffee kit with ceramic dripper, cup, and serving carafe.", 89.0, 4.4, "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80", false, 16));
+				productService.createProduct(new ProductRequest(
+						"Urea",
+						"IFFCO",
+						"Nitrogen Fertilizer",
+						"UREA-45KG-B1",
+						"45 Kg Bag",
+						"bag",
+						"BATCH-UREA-101",
+						LocalDate.now().plusMonths(12),
+						new BigDecimal("1180.00"),
+						new BigDecimal("1320.00"),
+						42,
+						8,
+						"IFFCO Supply Hub",
+						true
+				));
+				productService.createProduct(new ProductRequest(
+						"DAP",
+						"Coromandel",
+						"Phosphatic Fertilizer",
+						"DAP-50KG-B2",
+						"50 Kg Bag",
+						"bag",
+						"BATCH-DAP-204",
+						LocalDate.now().plusMonths(10),
+						new BigDecimal("1285.00"),
+						new BigDecimal("1450.00"),
+						28,
+						6,
+						"Coromandel Distributor",
+						true
+				));
+				productService.createProduct(new ProductRequest(
+						"Potash",
+						"Tata",
+						"Potassium Fertilizer",
+						"POTASH-50KG-C1",
+						"50 Kg Bag",
+						"bag",
+						"BATCH-POT-331",
+						LocalDate.now().plusMonths(9),
+						new BigDecimal("980.00"),
+						new BigDecimal("1125.00"),
+						19,
+						5,
+						"Tata Agro Chemicals",
+						true
+				));
+				productService.createProduct(new ProductRequest(
+						"Micronutrient Mix",
+						"AgriGold",
+						"Speciality Fertilizer",
+						"MICRO-10KG-A5",
+						"10 Kg Pack",
+						"pack",
+						"BATCH-MICRO-118",
+						LocalDate.now().plusMonths(7),
+						new BigDecimal("420.00"),
+						new BigDecimal("520.00"),
+						12,
+						4,
+						"AgriGold Traders",
+						true
+				));
 			}
 		};
 	}

@@ -24,6 +24,7 @@ public class AuthServiceImpl implements AuthService {
             response.put("userId", user.getId());
             response.put("username", user.getUsername());
             response.put("fullName", user.getFullName());
+            response.put("role", user.getRole());
         } else {
             response.put("status", "error");
             response.put("message", "Invalid email or password.");
